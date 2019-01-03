@@ -4,6 +4,7 @@ import { withRouter } from 'react-router';
 
 const RouteResolver = ({ routes, location, Route }) => {
   const [branch] = matchRoutes(routes, location.pathname);
+  if (!branch) return null;
   return <Route key={branch.route.path} {...branch.route} match={branch.match} />;
 };
 

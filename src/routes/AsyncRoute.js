@@ -1,5 +1,4 @@
 import React from 'react';
-
 class AsyncRoute extends React.PureComponent {
   state = {
     loading: false,
@@ -8,28 +7,23 @@ class AsyncRoute extends React.PureComponent {
 
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
-    const { meta } = this.props;
-    console.info('AsyncRoute', this.props.meta.Component);
-    if (!meta.Component) {
-      this.loadComponent();
-    } else {
-      this.setState({ loaded: true });
-    }
+    this.loadComponent();
   }
 
   loadComponent = async () => {
-    const { meta } = this.props;
+    const { loader } = this.props;
 
     try {
       this.setState({ loading: true });
-      const promise = meta.promise || this.props.loader();
-      const Component = await promise;
-      console.info('Component', meta, promise, Component);
+      const Component = await loader();
+      console.info('Component', Component);
+      this.Component = Component.default;
       this.setState({
         loaded: true,
         loading: false,
       });
     } catch (e) {
+      console.error('AsyncRoute', e);
       this.setState({ loaded: false, loading: false });
     }
   };
@@ -41,12 +35,9 @@ class AsyncRoute extends React.PureComponent {
     }
 
     if (this.state.loaded) {
-      const {
-        meta: { Component },
-        match,
-      } = this.props;
+      const { Component } = this;
       console.info('this.Component', this.Component, this.props);
-      return <Component match={match} />;
+      return <Component match={this.props.match} />;
     }
 
     return <div>网络错误, 请尝试刷新</div>;

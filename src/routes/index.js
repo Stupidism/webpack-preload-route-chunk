@@ -3,46 +3,22 @@ const FooRoute = () =>
 const BarRoute = () =>
   import(/* webpackChunkName: "routes.BarRoute" */ './BarRoute');
 const BazRoute = () =>
-  import(/* webpackChunkName: "routes.BazRoute" */ './BazRoute');
-
-const asyncConfig = route => {
-  const meta = {
-    promise: null,
-    Component: null,
-  };
-
-  const loader = async () => {
-    if (meta.Component) return meta.Component;
-    if (meta.promise) return meta.promise;
-    meta.promise = route.loadComponent().then(module => {
-      meta.Component = module.default || module;
-      meta.promise = null;
-      return meta.Component;
-    });
-    return meta.promise;
-  };
-
-  return {
-    ...route,
-    loader,
-    meta,
-  };
-};
+  import(/* webpackPreload: true, webpackChunkName: "routes.BazRoute" */ './BazRoute');
 
 const routes = [
   {
     path: '/',
     exact: true,
-    loadComponent: FooRoute,
+    loader: FooRoute,
   },
   {
     path: '/bar',
-    loadComponent: BarRoute,
+    loader: BarRoute,
   },
   {
     path: '/baz',
-    loadComponent: BazRoute,
+    loader: BazRoute,
   },
-].map(asyncConfig);
+];
 
 export default routes;
